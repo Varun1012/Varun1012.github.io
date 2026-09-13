@@ -2,105 +2,21 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>心情買賣器</title>
-    <meta name="description" content="把一個人的心情，當成一隻股票。" />
-    <link rel="icon" href="./favicon.svg" />
+    <meta name="description" content="把一個人的心情，當成一隻股票。讀日誌、對話、在對的時機買賣。" />
+    <meta name="theme-color" content="#0c0d0b" />
+    <link rel="icon" type="image/svg+xml" href="/mood-exchange/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600&family=Noto+Serif+TC:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      :root {
-        --bg: #0c0d0b;
-        --fg: #e8e4d8;
-        --muted: #8e8a7c;
-        --up: #d4453e;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-height: 100dvh;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: "Noto Sans TC", system-ui, sans-serif;
-      }
-      main {
-        max-width: 40rem;
-        margin: 0 auto;
-        padding: 4rem 1.5rem 5rem;
-      }
-      h1 {
-        font-family: "Noto Serif TC", serif;
-        font-size: clamp(2rem, 6vw, 3.2rem);
-        margin: 0.4rem 0 0.6rem;
-      }
-      .kicker { letter-spacing: 0.28em; font-size: 0.75rem; color: var(--muted); }
-      p { line-height: 1.7; color: #c9c4b6; }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.6rem;
-        margin: 1.75rem 0;
-      }
-      figure {
-        margin: 0;
-        background: #141511;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      img { width: 100%; height: 7.5rem; object-fit: cover; object-position: center 18%; display: block; }
-      figcaption { padding: 0.55rem 0.6rem 0.7rem; font-size: 0.75rem; }
-      figcaption strong { display: block; font-weight: 600; }
-      figcaption span { color: var(--muted); }
-      a.btn {
-        display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.7rem 1.1rem;
-        border-radius: 8px;
-        background: var(--fg);
-        color: var(--bg);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .note { font-size: 0.85rem; color: var(--muted); }
-    </style>
+    <script type="module" crossorigin src="/mood-exchange/assets/pages-entry-flhNLJJ7.js"></script>
+    <link rel="stylesheet" crossorigin href="/mood-exchange/assets/pages-entry-DmJr4rhH.css">
   </head>
-  <body>
-    <main>
-      <p class="kicker">MOOD EXCHANGE</p>
-      <h1>心情買賣器</h1>
-      <p>每一局會遇見一個不同的人。開心時價格漲，難過時價格跌。讀日誌、對話，在對的時機買賣。起始資金 $10。</p>
-      <div class="grid">
-        <figure>
-          <img src="./p-lin.jpg" alt="林予安" />
-          <figcaption><strong>林予安</strong><span>圖書館員</span></figcaption>
-        </figure>
-        <figure>
-          <img src="./p-chen.jpg" alt="陳浩文" />
-          <figcaption><strong>陳浩文</strong><span>工程師</span></figcaption>
-        </figure>
-        <figure>
-          <img src="./p-wu.jpg" alt="吳曉晴" />
-          <figcaption><strong>吳曉晴</strong><span>小學老師</span></figcaption>
-        </figure>
-        <figure>
-          <img src="./p-zhang.jpg" alt="張北辰" />
-          <figcaption><strong>張北辰</strong><span>吉他老師</span></figcaption>
-        </figure>
-        <figure>
-          <img src="./p-he.jpg" alt="何予希" />
-          <figcaption><strong>何予希</strong><span>花店助理</span></figcaption>
-        </figure>
-        <figure>
-          <img src="./ching.jpg" alt="周澄" />
-          <figcaption><strong>周澄</strong><span>平面設計師</span></figcaption>
-        </figure>
-      </div>
-      <p>可玩的完整版本在 Grok 預覽裡：隨機開局、交易聲效、日誌與未來人。</p>
-      <p class="note">原始碼：本倉庫。文字為簡單繁體中文，不用粵語。</p>
-      <a class="btn" href="https://github.com/Varun1012/mood-exchange">GitHub 原始碼</a>
-    </main>
+  <body class="bg-bg text-fg">
+    <div id="root"></div>
   </body>
 </html>
