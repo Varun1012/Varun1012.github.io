@@ -496,14 +496,27 @@
     return (
       state.cash +
       state.pos.reduce((s, p) => {
-        const q = state.quotes[p.s];
-        const inst = BY[p.s];
-        const mtm = p.qty > 0 ? q.bid : q.ask;
-        const pnl = (mtm - p.avg) * p.qty * inst.pv;
-        const margin = (Math.abs(p.qty) * p.avg * inst.pv) / p.lev;
-        return s + margin + pnl;
+        return s + posMargin(p) + posPnl(p);
       }, 0)
     );
+  }
+  function markOf(p) {
+    const q = state.quotes[p.s];
+    return p.qty > 0 ? q.bid : q.ask;
+  }
+  function posPnl(p) {
+    return (markOf(p) - p.avg) * p.qty * BY[p.s].pv;
+  }
+  function posMargin(p) {
+    return (Math.abs(p.qty) * p.avg * BY[p.s].pv) / p.lev;
+  }
+  function posPct(p) {
+    const avg = p.avg;
+    if (!avg) return 0;
+    return ((markOf(p) - avg) / avg) * (p.qty > 0 ? 1 : -1);
+  }
+  function totalPosPnl() {
+    return state.pos.reduce((s, p) => s + posPnl(p), 0);
   }
 
   function toast(msg) {
@@ -864,7 +877,48 @@
     if (cnv) scheduleChart();
     const cap = document.getElementById("k-cap");
     if (cap) cap.textContent = kCaption();
+    const bidEl = document.getElementById("sel-bid");
+    if (bidEl) bidEl.textContent = fmtP(q.bid);
+    const askEl = document.getElementById("sel-ask");
+    if (askEl) askEl.textContent = fmtP(q.ask);
+    const buyBtn = document.getElementById("buy");
+    if (buyBtn) buyBtn.textContent = "買入 @ " + fmtP(q.ask);
+    const sellBtn = document.getElementById("sell");
+    if (sellBtn) sellBtn.textContent = "賣出 @ " + fmtP(q.bid);
+    paintPositions();
     paintAdvice();
+  }
+  function paintPositions() {
+    let total = 0;
+    document.querySelectorAll("[data-pos]").forEach((row) => {
+      const s = row.dataset.pos;
+      const p = state.pos.find((x) => x.s === s);
+      if (!p) return;
+      const upnl = posPnl(p);
+      const mtm = markOf(p);
+      const val = posMargin(p) + upnl;
+      const pct = posPct(p);
+      total += upnl;
+      const pnlEl = row.querySelector("[data-pos-pnl]");
+      if (pnlEl) {
+        pnlEl.textContent = fmtH(upnl);
+        pnlEl.className = "mono px " + (upnl >= 0 ? "up" : "down");
+      }
+      const pctEl = row.querySelector("[data-pos-pct]");
+      if (pctEl) {
+        pctEl.textContent = fmtPct(pct);
+        pctEl.className = "mono " + (upnl >= 0 ? "up" : "down");
+      }
+      const mtmEl = row.querySelector("[data-pos-mtm]");
+      if (mtmEl) mtmEl.textContent = fmtP(mtm);
+      const valEl = row.querySelector("[data-pos-val]");
+      if (valEl) valEl.textContent = fmtH(val);
+    });
+    const tot = document.getElementById("pos-total-pnl");
+    if (tot) {
+      tot.textContent = fmtH(total);
+      tot.className = "mono " + (total >= 0 ? "up" : "down");
+    }
   }
   function paintAdvice() {
     const series = overlayLive(state.candles[state.sel][state.tf] || []);
@@ -886,6 +940,18 @@
     const box = document.getElementById("hints-live");
     if (box) {
       box.innerHTML = hs.map((h) => `<p class="${h[0] === "up" ? "up" : h[0] === "down" ? "down" : ""}"><b>${h[1]}</b><br><span class="muted">${h[2]}</span></p>`).join("");
+    }
+    const posLive = document.getElementById("pos-live");
+    if (posLive) {
+      const p = state.pos.find((x) => x.s === state.sel);
+      if (!p) {
+        posLive.hidden = true;
+        posLive.textContent = "";
+      } else {
+        const upnl = posPnl(p);
+        posLive.hidden = false;
+        posLive.innerHTML = `持倉盈虧額 <b class="${upnl >= 0 ? "up" : "down"}">${fmtH(upnl)}</b>`;
+      }
     }
   }
   function kCaption() {
@@ -986,10 +1052,11 @@
           <div class="hints">
             <div class="muted">實時盈虧比 · 技術提示 · 教學用途，非投資建議</div>
             <div id="hints-live">${hs.map((h) => `<p class="${h[0] === "up" ? "up" : h[0] === "down" ? "down" : ""}"><b>${h[1]}</b><br><span class="muted">${h[2]}</span></p>`).join("")}</div>
+            <div id="pos-live" class="muted" style="margin-top:8px"></div>
           </div>
           <div class="bidask">
-            <div class="bid"><div class="cap">買入價 Bid（賣出成交）</div><div class="px mono">${fmtP(q.bid)}</div></div>
-            <div class="ask"><div class="cap">賣出價 Ask（買入成交）</div><div class="px mono">${fmtP(q.ask)}</div></div>
+            <div class="bid"><div class="cap">買入價 Bid（賣出成交）</div><div class="px mono" id="sel-bid">${fmtP(q.bid)}</div></div>
+            <div class="ask"><div class="cap">賣出價 Ask（買入成交）</div><div class="px mono" id="sel-ask">${fmtP(q.ask)}</div></div>
           </div>
           <div class="ticket">
             <label>數量（可碎股）<input class="qty" id="qty" value="${esc(state.qty)}" inputmode="numeric" /></label>
@@ -1002,10 +1069,10 @@
           </div>
         </section>
         <section class="col">
-          <h3>持倉</h3>
+          <h3>持倉${state.pos.length ? ` <span id="pos-total-pnl" class="mono ${totalPosPnl() >= 0 ? "up" : "down"}">${fmtH(totalPosPnl())}</span>` : ""}</h3>
           ${state.pos.length ? state.pos.map((p) => {
-            const i = BY[p.s], qq = state.quotes[p.s], mtm = p.qty > 0 ? qq.bid : qq.ask, upnl = (mtm - p.avg) * p.qty * i.pv;
-            return `<div class="pos"><div>${i.n} <span class="muted mono">${p.s}</span></div><div class="meta">${p.qty > 0 ? "好倉" : "淡倉"} ${Math.abs(p.qty)} · 均價 ${fmtP(p.avg)} · ${p.lev}x</div><div class="mono ${upnl >= 0 ? "up" : "down"}">${fmtH(upnl)}</div><button type="button" class="ghost" style="margin-top:8px" data-close="${p.s}">平倉</button></div>`;
+            const i = BY[p.s], mtm = markOf(p), upnl = posPnl(p), val = posMargin(p) + upnl, pct = posPct(p);
+            return `<div class="pos" data-pos="${p.s}"><div class="pos-top"><button type="button" class="pos-name" data-s="${p.s}">${i.n} <span class="muted mono">${p.s}</span></button><button type="button" class="ghost" data-close="${p.s}">平倉</button></div><div class="meta">${p.qty > 0 ? "好倉" : "淡倉"} ${Math.abs(p.qty)} · 均價 ${fmtP(p.avg)} · ${p.lev}x · 市價 <span data-pos-mtm>${fmtP(mtm)}</span></div><div class="pos-pnl"><div><div class="cap">盈虧額</div><div class="mono px ${upnl >= 0 ? "up" : "down"}" data-pos-pnl>${fmtH(upnl)}</div></div><div><div class="cap">回報</div><div class="mono ${upnl >= 0 ? "up" : "down"}" data-pos-pct>${fmtPct(pct)}</div></div><div><div class="cap">持倉市值</div><div class="mono muted" data-pos-val>${fmtH(val)}</div></div></div></div>`;
           }).join("") : `<p class="muted">空倉。本金 ${fmtH(START)}，目標 ${fmtH(GOAL)}。可用槓桿放大恆指迷你倉。</p>`}
           <h3 style="margin-top:18px">成交</h3>
           ${state.fills.slice(0, 10).map((f) => `<div class="fill"><span>${f.side === "buy" ? "買入" : "賣出"} ${f.s} ${f.qty}</span><span class="mono">@ ${fmtP(f.price)}</span></div>`).join("") || `<p class="muted">尚未落盤。</p>`}

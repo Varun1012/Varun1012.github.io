@@ -201,6 +201,13 @@ canvas.kline { width: 100%; height: 312px; display: block; margin: 8px 0; }
   background: var(--card);
 }
 .pos .meta { font-size: 12px; color: var(--muted); margin: 4px 0; }
+.pos-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.pos-name { background: none; border: 0; color: inherit; text-align: left; padding: 0; font: inherit; }
+.pos-name:hover { color: var(--primary); }
+.pos-pnl { display: grid; grid-template-columns: 1.2fr 0.8fr 1fr; gap: 8px; margin-top: 8px; }
+.pos-pnl .cap { font-size: 11px; color: var(--muted); }
+.pos-pnl .px { font-size: 18px; letter-spacing: -0.02em; }
+h3 #pos-total-pnl { letter-spacing: 0; text-transform: none; font-size: 14px; margin-left: 8px; }
 .fill {
   display: flex;
   justify-content: space-between;
