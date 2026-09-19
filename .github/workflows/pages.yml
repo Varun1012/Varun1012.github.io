@@ -34,6 +34,7 @@ jobs:
           test -f _site/apex-jade-onyx-harbor/audio/market-ticker.mp3
           grep -q "港股模擬盤" _site/apex-jade-onyx-harbor/index.html
           grep -q "market-ticker.mp3" _site/apex-jade-onyx-harbor/app.js
+          grep -q "rollExtreme" _site/apex-jade-onyx-harbor/app.js
           node --check _site/apex-jade-onyx-harbor/app.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
