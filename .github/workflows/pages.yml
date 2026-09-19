@@ -24,10 +24,15 @@ jobs:
           cp index.html game.js styles.css favicon.svg og.jpg x-banner.jpg _site/
           cp -r maps _site/maps
           cp -r mood-exchange _site/mood-exchange
+          cp -r apex-jade-onyx-harbor _site/apex-jade-onyx-harbor
           test -f _site/index.html
           grep -q "八號風球" _site/index.html
           test -f _site/mood-exchange/index.html
           grep -q "心情買賣器" _site/mood-exchange/index.html
+          test -f _site/apex-jade-onyx-harbor/index.html
+          test -f _site/apex-jade-onyx-harbor/app.js
+          grep -q "港股模擬盤" _site/apex-jade-onyx-harbor/index.html
+          node --check _site/apex-jade-onyx-harbor/app.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
