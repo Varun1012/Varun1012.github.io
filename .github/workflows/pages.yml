@@ -25,6 +25,10 @@ jobs:
           cp -r maps _site/maps
           cp -r mood-exchange _site/mood-exchange
           cp -r apex-jade-onyx-harbor _site/apex-jade-onyx-harbor
+          cp -r gusheng _site/gusheng
+          test -f _site/gusheng/index.html
+          grep -q "股生" _site/gusheng/index.html
+          test -f _site/gusheng/people/hk.png
           test -f _site/index.html
           grep -q "八號風球" _site/index.html
           test -f _site/mood-exchange/index.html
