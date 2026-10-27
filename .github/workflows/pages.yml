@@ -29,6 +29,7 @@ jobs:
           test -f _site/gusheng/index.html
           grep -q "股生" _site/gusheng/index.html
           test -f _site/gusheng/people/hk.png
+          test -f _site/gusheng/people/eg.png
           test -f _site/index.html
           grep -q "八號風球" _site/index.html
           test -f _site/mood-exchange/index.html
